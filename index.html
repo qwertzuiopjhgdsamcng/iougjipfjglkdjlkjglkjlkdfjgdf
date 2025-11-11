@@ -1,331 +1,91 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>QUANTUM STRESS TESTER</title>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap');
-        
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Orbitron', monospace;
-        }
-
-        :root {
-            --neon-green: #00ff00;
-            --neon-blue: #0066ff;
-            --neon-red: #ff0033;
-            --neon-purple: #9900ff;
-            --dark-bg: #000011;
-        }
-
-        body {
-            background: var(--dark-bg);
-            color: var(--neon-green);
-            overflow-x: hidden;
-            min-height: 100vh;
-            position: relative;
-        }
-
-        /* Animated background */
-        .matrix-bg {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: -1;
-            opacity: 0.3;
-        }
-
-        /* Glitch effect */
-        .glitch {
-            position: relative;
-            animation: glitch 5s infinite;
-        }
-
-        @keyframes glitch {
-            0% { transform: translate(0); }
-            20% { transform: translate(-2px, 2px); }
-            40% { transform: translate(-2px, -2px); }
-            60% { transform: translate(2px, 2px); }
-            80% { transform: translate(2px, -2px); }
-            100% { transform: translate(0); }
-        }
-
-        .container {
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 20px;
-            position: relative;
-            z-index: 1;
-        }
-
-        .header {
-            text-align: center;
-            padding: 30px 0;
-            border-bottom: 3px solid var(--neon-green);
-            margin-bottom: 30px;
-            position: relative;
-        }
-
-        .header h1 {
-            font-size: 4em;
-            font-weight: 900;
-            text-shadow: 0 0 30px var(--neon-green);
-            background: linear-gradient(45deg, var(--neon-green), var(--neon-blue), var(--neon-purple));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            animation: pulse 2s infinite;
-        }
-
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-            100% { transform: scale(1); }
-        }
-
-        .control-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 20px;
-            margin-bottom: 30px;
-        }
-
-        .panel {
-            background: rgba(0, 20, 40, 0.8);
-            border: 2px solid var(--neon-blue);
-            border-radius: 15px;
-            padding: 25px;
-            backdrop-filter: blur(10px);
-            box-shadow: 0 0 30px rgba(0, 102, 255, 0.3);
-            transition: all 0.3s ease;
-        }
-
-        .panel:hover {
-            border-color: var(--neon-green);
-            box-shadow: 0 0 40px rgba(0, 255, 0, 0.4);
-            transform: translateY(-5px);
-        }
-
-        .panel h3 {
-            color: var(--neon-blue);
-            margin-bottom: 20px;
-            font-size: 1.4em;
-            text-shadow: 0 0 10px currentColor;
-        }
-
-        input, select, button {
-            width: 100%;
-            padding: 15px;
-            margin: 8px 0;
-            background: rgba(0, 0, 0, 0.7);
-            border: 2px solid var(--neon-green);
-            border-radius: 8px;
-            color: var(--neon-green);
-            font-size: 1.1em;
-            transition: all 0.3s ease;
-        }
-
-        input:focus, select:focus {
-            outline: none;
-            border-color: var(--neon-purple);
-            box-shadow: 0 0 20px var(--neon-purple);
-        }
-
-        button {
-            background: linear-gradient(45deg, var(--neon-red), var(--neon-purple));
-            color: white;
-            font-weight: bold;
-            cursor: pointer;
-            border: none;
-            position: relative;
-            overflow: hidden;
-        }
-
-        button:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 10px 25px rgba(255, 0, 51, 0.4);
-        }
-
-        button:active {
-            transform: translateY(0);
-        }
-
-        button::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
-            transition: 0.5s;
-        }
-
-        button:hover::before {
-            left: 100%;
-        }
-
-        #start {
-            background: linear-gradient(45deg, #ff0033, #cc0000);
-            font-size: 1.3em;
-            padding: 20px;
-        }
-
-        #stop {
-            background: linear-gradient(45deg, #0066ff, #0044cc);
-            font-size: 1.3em;
-            padding: 20px;
-        }
-
-        .stats-panel {
-            grid-column: 1 / -1;
-            background: rgba(255, 0, 51, 0.1);
-            border-color: var(--neon-red);
-        }
-
-        .log-container {
-            height: 400px;
-            overflow-y: auto;
-            background: rgba(0, 0, 0, 0.9);
-            border: 2px solid var(--neon-green);
-            border-radius: 10px;
-            padding: 20px;
-            margin-top: 20px;
-            font-family: 'Courier New', monospace;
-        }
-
-        .log-entry {
-            padding: 8px 0;
-            border-bottom: 1px solid rgba(0, 255, 0, 0.1);
-            animation: slideIn 0.3s ease;
-        }
-
-        @keyframes slideIn {
-            from { opacity: 0; transform: translateX(-20px); }
-            to { opacity: 1; transform: translateX(0); }
-        }
-
-        .top-button {
-            position: fixed;
-            bottom: 30px;
-            right: 30px;
-            width: 60px;
-            height: 60px;
-            background: var(--neon-purple);
-            border: none;
-            border-radius: 50%;
-            color: white;
-            font-size: 1.5em;
-            cursor: pointer;
-            box-shadow: 0 0 20px var(--neon-purple);
-            z-index: 1000;
-            transition: all 0.3s ease;
-        }
-
-        .top-button:hover {
-            transform: scale(1.1) translateY(-5px);
-            box-shadow: 0 0 30px var(--neon-purple);
-        }
-
-        .progress-bar {
-            width: 100%;
-            height: 10px;
-            background: rgba(0, 255, 0, 0.2);
-            border-radius: 5px;
-            margin: 10px 0;
-            overflow: hidden;
-        }
-
-        .progress-fill {
-            height: 100%;
-            background: linear-gradient(90deg, var(--neon-green), var(--neon-blue));
-            width: 0%;
-            transition: width 0.3s ease;
-        }
-
-        .floating {
-            animation: floating 3s ease-in-out infinite;
-        }
-
-        @keyframes floating {
-            0% { transform: translateY(0px); }
-            50% { transform: translateY(-10px); }
-            100% { transform: translateY(0px); }
-        }
-    </style>
+    <title>Fortnite TCP Connection Optimizer</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <!-- Animated Background -->
-    <div class="matrix-bg" id="matrixBg"></div>
-
     <div class="container">
-        <div class="header glitch">
-            <h1>⚡ QUANTUM STRESS TESTER ⚡</h1>
-            <p>MAXIMUM SERVER IMPACT PROTOCOL ENGAGED</p>
+        <div class="header">
+            <h1>Fortnite TCP Connection Optimizer</h1>
+            <p>Test and optimize your game server connections</p>
         </div>
 
-        <div class="control-grid">
-            <!-- Target Configuration -->
-            <div class="panel floating">
-                <h3>🎯 TARGET LOCK</h3>
-                <input type="text" id="target" placeholder="SERVER IP" value="fortnite-server.com">
-                <input type="number" id="port" placeholder="PORT" value="9000">
-                <input type="number" id="duration" placeholder="DURATION (SECONDS)" value="3600" min="1" max="86400">
+        <div class="content">
+            <div class="form-group">
+                <label for="serverIp">Game Server IP</label>
+                <input type="text" id="serverIp" placeholder="Enter Fortnite server IP" value="127.0.0.1">
             </div>
 
-            <!-- Attack Vector -->
-            <div class="panel floating" style="animation-delay: 0.2s;">
-                <h3>💥 ATTACK VECTOR</h3>
-                <select id="method">
-                    <option value="quantum_sync">QUANTUM SYNC FLOOD</option>
-                    <option value="neutron_blast">NEUTRON BLAST UDP</option>
-                    <option value="blackhole_tcp">BLACKHOLE TCP</option>
-                    <option value="fortnite_annihilator">FORTNITE ANNIHILATOR</option>
-                    <option value="multiversal_storm">MULTIVERSAL STORM</option>
+            <div class="form-group">
+                <label for="tcpPort">TCP Port Range</label>
+                <select id="tcpPort">
+                    <option value="443">Port 443 (HTTPS)</option>
+                    <option value="80">Port 80 (HTTP)</option>
+                    <option value="5222">Port 5222 (Game Client)</option>
+                    <option value="9000-9100">Ports 9000-9100 (Game Data)</option>
                 </select>
-                <input type="number" id="threads" placeholder="QUANTUM THREADS" value="10000" min="1" max="50000">
             </div>
 
-            <!-- Power Settings -->
-            <div class="panel floating" style="animation-delay: 0.4s;">
-                <h3>⚡ POWER MATRIX</h3>
-                <input type="number" id="packet_size" placeholder="PACKET SIZE" value="65507" min="1" max="65507">
-                <input type="number" id="delay" placeholder="DELAY (MS)" value="0" min="0" max="1000">
-                <input type="number" id="amplification" placeholder="AMPLIFICATION" value="100" min="1" max="1000">
+            <div class="form-group">
+                <label for="testDuration">Test Duration</label>
+                <select id="testDuration">
+                    <option value="30">30 seconds</option>
+                    <option value="60">1 minute</option>
+                    <option value="300">5 minutes</option>
+                    <option value="600">10 minutes</option>
+                </select>
             </div>
 
-            <!-- Statistics -->
-            <div class="panel stats-panel">
-                <h3>📊 QUANTUM STATISTICS</h3>
-                <div class="progress-bar">
-                    <div class="progress-fill" id="powerLevel"></div>
+            <button class="test-button" onclick="startOptimization()">
+                🚀 Start Connection Optimization
+            </button>
+
+            <div class="results" id="results">
+                <h3 style="margin-bottom: 20px;">Optimization Results</h3>
+                
+                <div class="metric">
+                    <span>Connection Stability</span>
+                    <span id="stability">0%</span>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="stabilityBar" style="width: 0%"></div>
+                    </div>
                 </div>
-                <div id="stats">READY FOR DEPLOYMENT</div>
-                <div>PACKETS/SEC: <span id="pps">0</span></div>
-                <div>DATA SENT: <span id="dataSent">0 MB</span></div>
-                <div>CONNECTIONS: <span id="connections">0</span></div>
+
+                <div class="metric">
+                    <span>Packet Success Rate</span>
+                    <span id="successRate">0%</span>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="successBar" style="width: 0%"></div>
+                    </div>
+                </div>
+
+                <div class="metric">
+                    <span>Latency Optimization</span>
+                    <span id="latency">0ms improvement</span>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="latencyBar" style="width: 0%"></div>
+                    </div>
+                </div>
+
+                <div class="metric">
+                    <span>TCP Handshake Speed</span>
+                    <span id="handshake">0% faster</span>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="handshakeBar" style="width: 0%"></div>
+                    </div>
+                </div>
             </div>
+
+            <div class="log" id="log"></div>
         </div>
 
-        <!-- Control Buttons -->
-        <div class="panel" style="text-align: center;">
-            <button id="start" onclick="startQuantumAttack()">🚀 INITIATE QUANTUM ANNIHILATION</button>
-            <button id="stop" onclick="stopQuantumAttack()">🛑 EMERGENCY SHUTDOWN</button>
-        </div>
-
-        <!-- Attack Log -->
-        <div class="panel">
-            <h3>📡 QUANTUM LOG</h3>
-            <div class="log-container" id="log"></div>
+        <div class="footer">
+            <p>This tool is for educational purposes and authorized testing only.</p>
+            <p>Always ensure you have permission before testing network connections.</p>
         </div>
     </div>
 
-    <!-- Top Button -->
-    <button class="top-button" onclick="scrollToTop()">↑</button>
-
-    <script src="quantum-annihilator.js"></script>
+    <script src="optimizer.js"></script>
 </body>
 </html>
